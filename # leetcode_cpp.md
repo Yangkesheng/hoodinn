@@ -71,7 +71,7 @@ public:
 }; 
 ```
 
-#33 
+## 33 
 * **思路** 折半查找
 1. 判断中间值是不是等于要找的值，不是继续
 2. 根据中间值判断出递增的区间，如果不再递增区间内，折半循环去找
@@ -105,7 +105,7 @@ public:
 }
 ```
 
-##34
+## 34
 * **思路** 题目要求时间复杂度为 O(log n)，这显然是要用到折办查找
 1. 先用一遍折办查找，找最左边的
 2. 再用一遍折半查找，找最右边的
@@ -150,7 +150,7 @@ public:
     }
 };
 ```
-##39
+## 39
 * **思路** 深度优先遍历
 1. 便利当前列表，减去当前值，新值重复
 ```cpp
@@ -229,7 +229,8 @@ public:
 };
 ```
 
-##46 dfs
+## 46 
+* **思路**dfs
 1. for循环 dp，记录或查找已经插入的数据就可以
 
 ```cpp
@@ -262,5 +263,30 @@ private:
 
 private:
     vector<vector<int>> ans;
+};
+```
+## 48
+1. 沿对角线交换
+2. 上下交换
+```cpp
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i+j <= n/2) {
+                    swap(matrix[i][j], matrix[n-j-1][n-i-1]);
+                }
+            }
+        }
+
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = 0; j < n; j++) {
+                swap(matrix[i][j], matrix[n-i-1][j]);
+            }
+        }
+    }
 };
 ```
