@@ -276,7 +276,7 @@ public:
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (i+j <= n/2) {
+                if (i+j < n) {
                     swap(matrix[i][j], matrix[n-j-1][n-i-1]);
                 }
             }
@@ -288,5 +288,190 @@ public:
             }
         }
     }
+};
+```
+
+## 53 
+1. 比较当前值和当前值加上前面的总和（记录这个一段的和， eg：2, -1, 2）
+2. 比较当前总和最大值，记录最大值
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int m = nums[0], now = nums[0];
+
+        for (int i = 1; i < nums.size(); i++) {
+            now = max(nums[i], now + nums[i]);
+
+            m = max(now, m);
+        }
+
+        return m;
+    }
+};
+
+```
+
+## 55 
+* **思路** 贪心算法
+1. 当前的位置已经大于了可以到达位置，不可达到
+2. 记录当前可达的最远点 
+
+```cpp
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int can_arrived = 0;
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (i > can_arrived)
+                return false;
+
+            can_arrived = max(i + nums[i], can_arrived);
+        }
+
+        return true;
+    }
+};
+```
+## 56
+* **思路** 
+1. 把区间的头和尾分开
+2. i的区间尾在i+1区间之间，那么继续判断下一个 
+```cpp
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        vector<int> start, end;
+        vector<vector<int>> ans;
+
+        for (auto it = intervals.begin(); it != intervals.end(); it++) {
+            start.push_back((*it)[0]);
+            end.push_back((*it)[1]);
+        }
+
+        sort(start.begin(), start.end());
+        sort(end.begin(), end.end());
+
+        for (int i = 0; i < start.size(); i++) {
+            vector<int> res;
+            res.push_back(start[i]);
+
+            while (i+1 < start.size() && start[i+1] <=  end[i] && end[i] <= end[i+1]) {
+                i++;
+            }
+
+            res.push_back(end[i]);
+            ans.push_back(res);
+        }
+
+        return ans;
+    }
+};
+```
+## 62 
+* **思路** 动态规划 dp[i][j] = dp[i - 1][j] + dp[i][j - 1]  (每个点线路等于顶上和左侧的和)
+1. 预处理边界，i=1的情况
+2. 根据动态方程填写，注意特殊情况（j=1）
+```cpp
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp;
+
+        for (int i = 0; i < m; i++) {
+            if (i != 0)
+                dp.push_back(vector<int>(n, 0));
+            else
+                dp.push_back(vector<int>(n, 1));
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (j != 0) {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+                else {
+                    dp[i][j] = 1;
+                }
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+};
+```
+
+## 70
+* **思路** 找规律，斐波那契数列
+```cpp
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n < 2)
+            return n;
+
+        int n1 = 1, n2 = 2, ans;
+        for (int i = 3; i <= n; i++) {
+            ans = n1 + n2;
+
+            n1 = n2;
+            n2 = ans;
+        }
+
+        return ans;
+    }
+};
+```
+
+## 72 
+* **思路** 动态规划
+1. dp[i+1][j+1] = min(dp[i+1][j], dp[i-1][j], dp[i+1][j-1]) (就是它相邻的3个点的最小值)
+
+```cpp
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        //处理dp初始化，处理极限情况，即wordi、word2之一为空
+        for (int i = 0; i < word1.size()+1; i++) {
+            vector<int> row(word2.size() + 1, 0);
+
+            for (int j = 0; j < word2.size()+1; j++) {
+                if (i == 0)
+                    row[j] = j;
+                else if (j == 0)
+                    row[j] = i;
+            }
+
+            dp.push_back(row);
+        }
+
+
+        for (int i = 0; i < word1.size(); i++) {
+            for (int j = 0; j < word2.size(); j++) {
+                if (word1[i] != word2[j]) {
+                    //插入：虚拟操作，只是相当于消耗了一个word2字符）所以当前的操作次数就等于word2[j-1]的操作次数（就是相当于把j删除掉）
+                    dp[i + 1][j + 1] = dp[i + 1][j]; 
+
+				    //删除：（虚拟操作，只是相当于消耗了一个word1字符）word1[i]当前位置删除，相当于查看前面的位置操作次数
+                    dp[i + 1][j + 1] = min(dp[i + 1][j + 1], dp[i][j+1]);
+
+				    //置换：操作次数等于，(word1[i-1] != word2[j-1]情况
+                    dp[i + 1][j + 1] = min(dp[i + 1][j + 1], dp[i][j]);
+
+                    //上面3种情况去最小的情况，加上本次操作，就是当前匹配成功的操作次数
+                    dp[i + 1][j + 1] += 1;
+                } else {
+                    dp[i + 1][j + 1] = dp[i][j];
+                }
+            }
+        }
+
+        return dp[word1.size()][word2.size()];
+    }
+
+private:
+    vector<vector<int>> dp;
 };
 ```
