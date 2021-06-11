@@ -475,3 +475,92 @@ private:
     vector<vector<int>> dp;
 };
 ```
+
+## 76
+* **思路** 滑动窗口
+1. 记录t中字符串，带个数的，t中有可能重复
+2. 遍历s，出现t中的字符‘a’，a的个数-1，当a数量为大于0表示一次成功，n(记录匹配长度)+1，否则是前面的字段已经匹配过了n就不加了，但是i的记录还是去减少
+
+```cpp
+#include <iostream>
+#include <map>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        map<char, int> cache;
+
+        for (int i = 0; i < t.size(); i++) 
+            cache[t[i]]++;
+
+        int l = 0 , n = 0;
+        string res;
+
+        for (int r = 0; r < s.size(); r++) { 
+            auto it = cache.find(s[r]);
+
+            if (it != cache.end()) {
+                if (it->second > 0) {
+                    n++;
+                }
+
+                cache[s[r]]--;
+            }
+
+            //l=r 边界情况，t只有一个字符
+            while (n == t.size() && l <= r) {
+                if (res == "" || res.size() > r-l+1) {
+                    res = s.substr(l, r - l + 1);
+                }
+
+                auto it2 = cache.find(s[l]);
+                if (it2 != cache.end()) {
+                    it2->second += 1;
+
+                    if (it2->second > 0)
+                        n--;
+                }
+
+                l++;
+            }
+        }
+
+        return res;
+    }
+};
+```
+
+## 78
+1. 先插入一个空
+2. 每一个数字插入之前先copy解追加之后，再插入
+ 
+```cpp
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        ans.push_back(vector<int>());
+
+        for (int i = 0; i < nums.size(); i++) {
+            dp(nums[i]);
+        }
+
+        return ans;
+    }
+
+private:
+    void dp(int num) {
+        for (int i = 0, m = ans.size(); i < m; i++) {
+            vector<int> res(ans[i]);
+
+            res.push_back(num);
+            ans.push_back(res);
+        }
+    }
+    
+private:
+    vector<vector<int>> ans;
+};
+```
