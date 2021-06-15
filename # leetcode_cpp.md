@@ -564,3 +564,79 @@ private:
     vector<vector<int>> ans;
 };
 ```
+
+## 79
+* **思路** dfs 
+1. 设置一个缓存记录走过的路
+2. 当首字母匹配成功开始，递归的去调用 
+
+```cpp
+class Solution {
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        for (int i = 0; i < board.size(); i++) 
+            seen.push_back(vector<bool> (board[i].size(), false));
+
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[i].size(); j++) {
+                if (board[i][j] == word[0] && dp(i, j, board, word.substr(1))) 
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+private:
+    bool dp(int i, int j, vector<vector<char>>& board, string word) {
+        if (!word.size())
+            return true;
+
+        seen[i][j] = true;
+
+        for (int n = 0; n < ii.size(); n++) {
+            if (0 <= i+ii[n] && i+ii[n] < board.size() 
+            && 0 <= j+jj[n] && j+jj[n] < board[i].size()
+            && !seen[i+ii[n]][j+jj[n]] 
+            && board[i+ii[n]][j+jj[n]] == word[0]) {
+                if (dp(i + ii[n], j + jj[n], board, word.substr(1)))
+                    return true;
+            }
+        }
+
+        seen[i][j] = false;
+
+        return false;
+    }
+
+private:
+    vector<vector<bool>> seen;
+    vector<int> ii = {0, 1, 0, -1}, jj = {-1, 0, 1, 0};
+};
+```
+
+## 94 
+* **思路** 递归（若用非递归，就需要用到栈）
+
+```cpp
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        dp(root);
+
+        return res;
+    }
+
+private:
+    void dp(TreeNode* root) {
+        if (root == NULL)
+            return;
+
+        inorderTraversal(root->left);
+        res.push_back(root->val);
+        inorderTraversal(root->right);
+    }
+
+    vector<int> res;
+};
+```
