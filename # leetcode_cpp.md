@@ -615,6 +615,78 @@ private:
 };
 ```
 
+
+## 84
+* **思路** 单调递增栈
+1. 给两边增加两个0,为了解决边界的高度计算
+2. 遍历高度，碰到变矮的数字，没法连续了，开始计算它左侧比它高的到地方（eg: 0,1,2,0。这里处理1, 2这里，先算2这个位置，再算1,2这个组合）
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        stack<int> pos;
+        heights.insert(heights.begin(), 0);
+        heights.insert(heights.end(), 0);
+
+        int res = 0;
+        for (int i = 0; i < heights.size(); i++) {
+            while (!pos.empty() && heights[pos.top()] > heights[i]) { //保证单调递增的栈
+                int h =  heights[pos.top()];
+                //保证单调递增的栈
+                pos.pop();
+
+                //i-1（表示从i的左侧）到pos.top()的距离
+                int w = i-1 - pos.top();
+                res = max(res, w * h);
+            }
+
+            pos.push(i);
+        }
+
+        return res;
+    }
+};
+```
+## 85 
+* **思路** 动态规划
+1. 设置dp[]一维数组，记录当前竖列连续的1
+2. 遍历数组时，当是1时，可以根据dp数组找到h（高度），然后开始倒序遍历，找可能的宽度
+3. 如果不是1,断掉当前的dp中连续的高度。
+
+```cpp
+class Solution {
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (!matrix.size())
+            return 0;
+
+        vector<int> dp(matrix[0].size(), 0);
+        int res = 0;
+
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix[i].size(); j++) {
+
+                if (matrix[i][j] == '1') {
+                    dp[j] += 1;
+
+                    int h = dp[j];
+                    for (int k = j; k >= 0 && matrix[i][k] == '1'; k--) {
+                        h = min(h, dp[k]);
+
+                        res = max(res, (j - k + 1) * h);
+                    }
+                } else {
+                    dp[j] = 0;
+                }
+            }
+        }
+
+        return res;
+    }
+};
+```
+
 ## 94 
 * **思路** 递归（若用非递归，就需要用到栈）
 
@@ -638,5 +710,26 @@ private:
     }
 
     vector<int> res;
+};
+```
+## 96
+* **思路**
+假设n个节点存在二叉排序树的个数是G(n)，令f(i)为以i为根的二叉搜索树的个数即有:G(n) = f(1) + f(2) + f(3) + f(4) + ... + f(n)。n为根节点，当i为根节点时，其左子树节点个数为[1,2,3,...,i-1]，右子树节点个数为[i+1,i+2,...n]，所以当i为根节点时，其左子树节点个数为i-1个，右子树节点为n-i，即f(i) = G(i-1)*G(n-i),上面两式可得:G(n) = G(0)*G(n-1)+G(1)*(n-2)+...+G(n-1)*G(0)
+
+```cpp
+class Solution {
+public:
+    int numTrees(int n) {
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] += dp[j] * dp[i - j - 1];
+            }
+        }
+
+        return dp[n];
+    }
 };
 ```
