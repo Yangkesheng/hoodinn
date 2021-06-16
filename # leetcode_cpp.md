@@ -674,6 +674,7 @@ public:
                     for (int k = j; k >= 0 && matrix[i][k] == '1'; k--) {
                         h = min(h, dp[k]);
 
+                        //j-k+1就是矩形的w
                         res = max(res, (j - k + 1) * h);
                     }
                 } else {
