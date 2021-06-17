@@ -734,3 +734,111 @@ public:
     }
 };
 ```
+
+## 98
+* **思路** 利用中序遍历是升续的特点
+1. 需要一个值，记录前面的值，保证赋值前这个是递增即可
+
+```cpp
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        if (root == NULL)
+            return true;
+
+        if(!isValidBST(root->left))
+            return false;
+
+        if (pre >= root->val)
+            return false;
+        else
+            pre = root->val;
+
+        if(!isValidBST(root->right))
+            return false;
+
+        return true;
+    }
+
+private:
+    //用double，不初始化为INT32_MIN，测试用例中出现了单个节点  val = INT32_MIN
+    double pre = INT64_MIN; 
+};
+```
+
+## 101
+* **思路**
+二叉树，递归
+
+```cpp
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        if (root == NULL)
+            return true;
+        
+        return dp(root->left, root->right);
+    }
+
+private:
+    bool dp(TreeNode* n1, TreeNode* n2) {
+        if (!n1 && !n2)
+            return true;
+        else if (!n1 || !n2)
+            return false;
+        else {
+            if (n1->val != n2->val)
+                return false;
+            
+            return dp(n1->left, n2->right) && dp(n1->right, n2->left);
+        }
+    }
+};
+```
+
+## 102
+* **思路** 二叉数，广度优先遍历借用队列
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        if (!root)
+            return ans;
+
+        queue<TreeNode *> cache;
+        cache.push(root);
+
+        vector<int> res;
+        int len = cache.size(); 
+        while (len > 0) {
+            TreeNode *head = cache.front();
+
+            res.push_back(head->val);
+
+            if (head->left)
+                cache.push(head->left);
+
+            if (head->right)
+                cache.push(head->right);
+
+            cache.pop();
+            len--;
+
+            if (!len) {
+                vector<int> c(res);
+                ans.push_back(c);
+
+                res.clear();
+                len = cache.size();
+            }
+        }
+
+        return ans;
+    }
+
+private:
+    vector<vector<int>> ans;
+};
+```
+
