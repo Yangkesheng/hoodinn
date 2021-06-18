@@ -956,3 +956,33 @@ private:
     }
 };
 ```
+
+## 128 
+* **思路** 题目要求O（n）意思是不能排序
+1. 记录出现过的
+
+```cpp
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        map<int, int> cache;
+        int res = 0;
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (cache[nums[i]] != 0)
+                continue;
+
+            int l = cache[nums[i] - 1];
+            int r = cache[nums[i] + 1];
+
+            res = max(res, l + r + 1);
+
+            cache[nums[i]] = -1;
+            cache[nums[i] - l] = l + r + 1;
+            cache[nums[i] + r] = l + r + 1;
+        }
+
+        return res;
+    }
+};
+```
