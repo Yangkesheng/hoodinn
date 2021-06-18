@@ -189,7 +189,7 @@ private:
 };
 ```
 
-##42
+## 42
 * **思路** 每一个柱子的相邻的矮的决定了乘水的多少。找到了池的较矮的一边，那么这个池的呈水量就决定了。（思想就是去确定池子矮的一边，这个问题就解决了）
 1. 找到两边较矮的开始计算
 2. 当前位置的的呈水量等于较矮的一边的最高减去当前高度
@@ -842,3 +842,117 @@ private:
 };
 ```
 
+## 104
+* **思路** 二叉树问题，递归
+```cpp 
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        dp(root);
+
+        return res;
+    }
+
+private:
+    void dp(TreeNode* root) {
+        if (!root)
+            return;
+
+        now++;
+        res = max(now, res);
+        dp(root->left);
+        dp(root->right);
+        now--;
+    }
+
+private:
+    int res = 0, now = 0;
+};
+```
+
+## 114
+* **思路** 二叉树递归。由于要形成先序（根->左->右）的连起来，所以做时从右左根，倒序的反向串起来。这样就需要先递归右子树。
+```cpp
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        if (!root)
+            return;
+
+        flatten(root->right);
+        flatten(root->left);
+
+        root->right = last;
+        root->left = NULL;
+        last = root;
+    }
+
+private:
+    TreeNode *last = NULL;
+};
+```
+
+## 121
+* **思路** 动态规划
+1. 递增的值是等于相邻之间差的累计
+2. 一旦变负，就是重新计算 
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int res = 0, dp = 0;
+
+        for (int i = 1; i < prices.size(); i++) {
+            dp += prices[i] - prices[i - 1];
+
+            dp = max(dp, 0);
+            res = max(dp, res);
+        }
+
+        return res;
+    }
+};
+```
+
+## 124
+* **思路**
+按照题意：一颗三个节点的小树的结果只可能有如下6种情况：
+1. 根 + 左 + 右
+2. 根 + 左
+3. 根 + 右
+4. 根
+5. 左  左右的节点是无意义的，无法越过根
+6. 右
+
+然后使用递归，选择小树的最大路径和的情况，拼凑成一颗大树
+
+```cpp
+class Solution {
+public:
+    int maxPathSum(TreeNode* root) {
+        dp(root);
+
+        return res;
+    }
+
+private:
+    int res = INT32_MIN;
+
+private:
+    int dp(TreeNode* root) {
+        if (!root)
+            return 0;
+
+        int l = dp(root->left);
+        l =max(l, 0);
+
+        int r = dp(root->right);
+        r = max(r, 0);
+
+        res = max(res, l + r + root->val);
+
+        return root->val + max(l,r);
+    }
+};
+```
