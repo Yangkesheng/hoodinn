@@ -986,3 +986,88 @@ public:
     }
 };
 ```
+
+## 139
+* **思路** 动态规划
+1. 填写dp数组，每个字字符串是否可以匹配
+
+```cpp
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        vector<bool> dp(s.size()+1, false);
+        dp[0] = true;
+
+        for (int i = 1; i <= s.size(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && find(wordDict.begin(), wordDict.end(),s.substr(j, i-j)) != wordDict.end()) {
+                    dp[i] = true;
+
+                    break;
+                }
+            }
+        }
+
+        return dp[s.size()];
+    }
+};
+```
+
+## 141
+* **思路** 快慢指针
+```cpp
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        for (ListNode *ptr1 = head, *ptr2 = head; ptr1&& ptr2; ) {
+            ptr1 = ptr1->next;
+
+            if (!ptr2->next)
+                break;
+
+            ptr2 = ptr2->next->next;
+            
+            if (ptr1 == ptr2)
+                return true;
+        }
+
+        return false;
+    }
+};
+```
+
+## 142
+* **思路** 快慢指针
+1. 找到相同的点
+2. 把其中一个指向头，一次走一步，向遇点就是解
+
+```cpp
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode *p1 = head, *p2 = head;
+        while (p1 && p2) {
+            p1 = p1->next;
+           
+            if (!p2->next)
+                return NULL;
+            p2 = p2->next->next;
+
+            if (!p1 || !p2)
+                return NULL;
+
+            if (p1 == p2) {
+                p1 = head;
+                break;
+            }
+        }
+
+        while (p1 != p2) {
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+
+        return p1;
+    }
+};
+```
