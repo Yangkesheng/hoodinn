@@ -1,4 +1,90 @@
 # 
+## 1
+* **思路** 缓存记录走过的
+
+```cpp
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        map<int, int> seen;
+        vector<int> res;
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (seen.find(target-nums[i]) != seen.end()) {
+                res.push_back(i);
+                res.push_back(seen[target-nums[i]]);
+
+                break;
+            }
+
+            seen[nums[i]] = i;
+        }
+
+        return res;
+    }
+};
+```
+
+## 2 
+* **思路** 细节
+
+```cpp
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        int carry = 0;
+        ListNode *dummyHead = new ListNode(-1);
+        ListNode *pre = dummyHead;
+
+        while (l1 || l2 || carry) {
+            int total = carry;
+
+            if (l1) {
+                total += l1->val;
+                l1 = l1->next;
+            }
+
+            if (l2) {
+                total += l2->val;
+                l2 = l2->next;
+            }
+
+            carry = total / 10;
+            pre->next = new ListNode(total%10);
+            pre = pre->next;
+        }
+
+        return dummyHead->next;
+    }
+};
+```
+
+## 3 
+* **思路** 滑动窗口
+1. 遍历整个数组i
+2. 再一次遍历0到i-1，找到和s[i]相等的s[k],更新k，和结果最长比较
+```cpp
+class Solution {
+public:
+     int lengthOfLongestSubstring(string s) {
+        int maxLen = 0;
+
+        for (int i=0, j = 0, k = 0; j < s.size(); j++) {
+            for (i = k; i < j; i++) {
+                if (s[i] == s[j]) {
+                    k = i + 1;
+
+                    break;
+                }
+            }
+
+            maxLen = maxLen < j-k+1 ? j-k+1 : maxLen;
+        }
+
+        return maxLen;
+    }
+};
+```
 
 ## 31 
 * **思路** 
